@@ -2,33 +2,48 @@ import express from "express"
 import { connectDb } from "./src/config/mongoDbConnection.js"
 import { productRouter } from "./src/routes/productRouter.js"
 import { AuthRouter } from "./src/routes/AuthRouter.js"  
-import {authMiddleware} from "./src/middlewares/authMiddleware.js"
-import {config} from "dotenv"
+import { authMiddleware } from "./src/middlewares/authMiddleware.js"
+import { config } from "dotenv"
 import cors from "cors"
 
-// ejecuta las variables de entorno
+// Ejecuta las variables de entorno
 config()
 
-let PORT= process.env.PORT || 3001
+const PORT = process.env.PORT || 3001
 
-// inicializando servidor con express
+// Inicializando servidor con express
 const server = express()
 server.use(cors()) 
 server.use(express.json())
 
-server.get("/",(req,res)=>{
+server.get("/", (req, res) => {
     res.status(200).json({
-        success:true,
-        message:"API REST con Mongo DB y Express"
+        success: true,
+        message: "API REST con Mongo DB y Express"
     })
 })
 
 // Rutas
-server.use("/products",authMiddleware,productRouter)
-server.use("/auth",AuthRouter)
+server.use("/products", authMiddleware, productRouter)
+server.use("/auth", AuthRouter)
 
-// inicializando el servidor y conexion a la base de datos
-server.listen(PORT,()=>{
-    console.log(`Servidor en escucha en http://localhost:${PORT}`)
-    connectDb()
-})
+// === ARRANQUE SEGURO Y ASÍNCRONO ===
+const startServer = async () => {
+    try {
+        console.log("Conectando a MongoDB Atlas...")
+        
+        // Obliga al sistema a esperar a que conecte la base de datos
+        await connectDb() 
+        console.log("Conexión a MongoDB Atlas establecida con éxito.✅")
+
+        // Una vez conectada, recién ahí abrimos el puerto para recibir peticiones
+        server.listen(PORT, () => {
+            console.log(`Servidor en escucha en el puerto ${PORT}`)
+        })
+    } catch (error) {
+        console.error("Error crítico al iniciar el servidor:❌", error.message)
+        process.exit(1) // Detiene la app si la base de datos falla
+    }
+}
+
+startServer()
