@@ -13,10 +13,10 @@ Este proyecto consiste en un servidor backend desarrollado con **Express** y **M
 
 ---
 
-## 🛠️ Requisitos Técnicos e Instalación
+## 🛠️ Requisitos Técnicos e Instalación Local
 
 ### Tecnologías Necesarias
-- **Node.js** (Versión 16 o superior)
+- **Node.js** 
 - **MongoDB** (Instancia local o clúster en MongoDB Atlas)
 
 ### Pasos para la Configuración Local
@@ -26,7 +26,7 @@ Este proyecto consiste en un servidor backend desarrollado con **Express** y **M
    npm install
    ```
 
-2. **Configurar las Variables de Env:**
+2. **Configurar las Variables de Entorno:**
    Crea un archivo `.env` en la raíz del proyecto basándote en el archivo de ejemplo `.env.example`.
    ```env
    PORT=3001
@@ -34,53 +34,57 @@ Este proyecto consiste en un servidor backend desarrollado con **Express** y **M
    JWT_SECRET=tu_palabra_secreta_super_segura
    ```
 
-3. **Ejecutar el Servidor:**:
+3. **Ejecutar el Servidor:**
      ```bash
      npm run dev
 
 ---
 
-## 📂 Estructura del Proyecto (Arquitectura MVC)
+## ☁️ Despliegue en la Nube (Render)
 
-La arquitectura modular separa de manera estricta las responsabilidades del sistema:
+El proyecto cuenta con un deploy completamente funcional listo para producción. 
+
+- **URL Base de Producción**: `https://servidor-con-express-mongodb.onrender.com`
+
+## 📂 Estructura del Proyecto (Arquitectura MVC)
 
 La arquitectura modular separa de manera estricta las responsabilidades del sistema:
 ```text
 ├── src/
-│   ├── config/             # Configuración y conexión a la base de datos
+│   ├── config/             # Configuración y conexión asíncrona a la base de datos
 │   ├── middlewares/        # Middlewares de control de acceso y seguridad (JWT)
 │   ├── models/             # Esquemas de Mongoose (User, Product)
-│   ├── controllers/        # Lógica de control para Autenticación y Productos
+│   ├── controllers/        # Lógica de negocio para Autenticación y Productos
 │   ├── routes/             # Enrutadores que dirigen las peticiones HTTP
-│
-├── package.json
-|── app.js                  # Inicialización del servidor Express y middlewares base
+├── app.js                  # Archivo de entrada, inicialización de Express y variables globales
+├── package.json            # Archivo de configuracion .json
 ├── .env.example            # Plantilla de variables de entorno requeridas
-├── coleccion_pruebas.json  # Archivo de pruebas exportado (Thunder Client)
+├── coleccion_pruebas.json  # Archivo de la colección de pruebas exportado (Postman)
 └── README.md               # Documentación general del proyecto
 ```
 
+---
 
 ## 🛣️ Endpoints de la API
 
 ### 🔐 Autenticación (Públicos)
-- **POST** `/auth/register` → Registra un nuevo usuario en la base de datos (valida fortaleza de contraseña y correos duplicados). Devuelve el token de acceso.
-- **POST** `/auth/login` → Compara credenciales encriptadas. Devuelve el token JWT.
+- **POST** `/auth/register` → Crea un nuevo usuario y devuelve el token JWT de acceso directo.
+- **POST** `/auth/login` → Valida credenciales encriptadas y devuelve el token JWT.
 
 ### 📦 Entidad Protegida: Productos (Privados)
 *Requiere incluir la cabecera `Authorization: Bearer <TOKEN_JWT>` en la petición.*
 - **GET** `/products` → Lista exclusivamente los productos pertenecientes al usuario autenticado.
-- **GET** `/products/:id` → Devuelve los detalles de un producto específico (siempre que pertenezca al usuario).
+- **GET** `/products/:id` → Devuelve los detalles de un producto específico (si pertenece al usuario).
 - **POST** `/products` → Crea un producto vinculándolo automáticamente al `userId` del usuario logueado.
-- **PUT** `/products/:id` → Modifica un producto. Actualiza el estado de disponibilidad automáticamente si se altera el stock.
-- **DELETE** `/products/:id` → Remueve de manera permanente el producto si pertenece al usuario solicitante.
+- **PUT** `/products/:id` → Modifica un producto de forma total o parcial (si pertenece al usuario).
+- **DELETE** `/products/:id` → Remueve de manera permanente el producto (si pertenece al usuario solicitante).
 
 ---
 
-## 📝 Ejemplos de Peticiones y Respuestas (JSON)
+## 📝 Ejemplos de Peticiones (JSON)
 
-### 1. Registro de Usuario (`POST /auth/register`)
-**Cuerpo de la Petición (Body):**
+### Registro de Usuario (`POST /auth/register`)
+**Cuerpo (Body):**
 ```json
 {
   "userName": "Juan Perez",
@@ -88,39 +92,9 @@ La arquitectura modular separa de manera estricta las responsabilidades del sist
   "password": "Password123!"
 }
 ```
-**Respuesta Exitosa (201 Created):**
-```json
-{
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "_id": "64b0f1b2c...",
-    "userName": "Juan Perez",
-    "email": "juan@example.com"
-  }
-}
-```
 
-### 2. Inicio de Sesión (`POST /auth/login`)
-**Cuerpo de la Petición (Body):**
-```json
-{
-  "email": "juan@example.com",
-  "password": "Password123!"
-}
-```
-**Respuesta Exitosa (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Login successful",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### 3. Crear Producto (`POST /products`)
-*Cabecera obligatoria: `Authorization: Bearer <TOKEN>`*
-**Cuerpo de la Petición (Body):**
+### Crear Producto (`POST /products`)
+**Cuerpo (Body):**
 ```json
 {
   "name": "Teclado Mecánico RGB",
@@ -129,31 +103,22 @@ La arquitectura modular separa de manera estricta las responsabilidades del sist
   "stock": 15
 }
 ```
-**Respuesta Exitosa (201 Created):**
-```json
-{
-  "success": true,
-  "message": "Product created successfully",
-  "data": {
-    "_id": "65cd38f1a...",
-    "name": "Teclado Mecánico RGB",
-    "price": 85.50,
-    "category": "Electrónica",
-    "stock": 15,
-    "available": true
-  }
-}
-```
 
 ---
 
-## 🧪 Colección de Pruebas
+## 🧪 Instrucciones para Ejecutar la Colección de Pruebas (Postman)
 
-El proyecto incluye el archivo `coleccion_pruebas.json` listo para ser entregado e importado directamente en **Postman**.
+El proyecto incluye el archivo `coleccion_pruebas.json` en la raíz, completamente configurado y automatizado con variables dinámicas para facilitar la evaluación.
 
-### Instrucciones para probar con Postman:
-1. Abre la aplicación de Postman o su versión web.
-2. Haz clic en el botón **Import** ubicado en la barra lateral o parte superior.
-3. Arrastra o selecciona el archivo `coleccion_pruebas.json` presente en la raíz de este proyecto.
-4. Asegúrate de tener corriendo tu servidor local (`npm run dev` en el puerto 3001).
-5. Las variables de entorno URL, Token JWT e IDs de Producto están automatizadas mediante scripts de post-respuesta dentro de la propia colección. Ejecuta las peticiones de forma secuencial.
+### Pasos para probar la API en Vivo:
+1. Abre **Postman** (aplicación de escritorio o cliente web).
+2. Haz clic en el botón **Import** (Importar) y selecciona el archivo `coleccion_pruebas.json`.
+3. Haz clic sobre el nombre de la colección importada (`Proyecto Backend MVC`) y dirígete a la pestaña **Variables**.
+4. En el campo **Current Value** de la variable `base_url`, puedes elegir qué servidor testear:
+   - **Para probar en la nube (Ya configurado por defecto)**: Deja la URL de Render (`https://servidor-con-express-mongodb.onrender.com`).
+   - **Para probar de forma local**: Cambia el valor por `http://localhost:3001` *(asegúrate de encender tu servidor local antes y de usar el "Desktop Agent" de Postman si estás en la versión web)*.
+5. Haz clic en **Save** (Guardar cambios).
+6. **Ejecuta las peticiones en orden secuencial**:
+   - Corre `1. Registrar Usuario` (con un correo nuevo) o `2. Login Usuario`. Los scripts internos de Postman capturarán la respuesta del servidor y **almacenarán automáticamente el Token JWT** en las variables internas.
+   - Corre `3. Crear Producto`. La ruta privada heredará el token sola y, tras crear el elemento, **guardará el ID dinámico del producto**.
+   - Corre los endpoints restantes (`GET por ID`, `PUT`, `DELETE`). Todos leerán las variables dinámicas de forma automática sin necesidad de copiar y pegar códigos de MongoDB de manera manual.
