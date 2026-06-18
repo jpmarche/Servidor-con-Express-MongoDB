@@ -1,4 +1,4 @@
-import { Product } from "../models/Productmodel.js"
+import { Product } from "../models/ProductModel.js"
 
 
 // Funcion para ver todos los productos registrados por el usuario logueado

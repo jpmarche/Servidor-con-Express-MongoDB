@@ -6,6 +6,7 @@ const authMiddleware = (req,res,next)=>{
     const header = req.headers.authorization
 
     if(!header || !header.startsWith("Bearer")){
+         console.log("🚨 [AuthMiddleware Error]: No se recibió el encabezado Authorization válido.");
          return res.status(401).json({ 
             success: false,
             error: "Unauthorized" })
