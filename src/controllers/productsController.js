@@ -4,10 +4,14 @@ import { Product } from "../models/ProductModel.js"
 // Funcion para ver todos los productos registrados por el usuario logueado
 const getProducts = async (req,res)=>{
     try {
-       
         const userLogged = req.userLogged
-        const foundProducts = await Product.find({userId:userLogged.id},{userId:0}) 
-       
+        const {role,id} = userLogged
+        let foundProducts
+        if(role==="admin"){
+            foundProducts = await Product.find()
+        }else{
+            foundProducts = await Product.find({userId: id})
+        }
         res.status(200).json({
             success: true,
             data: foundProducts,
@@ -22,25 +26,28 @@ const getProducts = async (req,res)=>{
 // Funcion para ver un producto registrado por el usuario logueado
 const getProduct = async(req,res)=>{
     try{
-    const userLogged = req.userLogged
+    const {id: userId, role} = req.userLogged
     const id = req.params.id
-    const foundProduct = await Product.findOne({
-        _id:id,
-        userId:userLogged.id
-    }, {userId:0})
-
+    const foundProduct = await Product.findById(id)
+    
     if(!foundProduct){
         return res.status(404).json({
             success:false,
-            message: "Product not found or you are not authorized to see it"
+            message: "Product not found"
         })
     }
-
+    if(userId === foundProduct.userId.toString() || role ==="admin"){
     return res.status(200).json({
         success:true,
         data: foundProduct,
-    })
+    })}
+    return res.status(403).json({
+            success: false,
+            message: "Access denied. You do not have permission to view this product."
+        })    
+
 }
+
     catch(error){
         return res.status(400).json({
             success:false,
@@ -88,26 +95,35 @@ const addProduct = async (req,res) =>{
 const updateProduct = async (req,res) => {
     try{
     const id = req.params.id
-    const userLogged = req.userLogged
+    const {id:userId,role} = req.userLogged
     const body = req.body
+    const foundProduct = await Product.findById(id)
+     
+    if(!foundProduct){
+        return res.status(404).json({
+            success:false,
+            message:"Product not found"
+        })
+    }
+      
     const updateData = {...body}
     if(body.stock !== undefined){
         updateData.available = body.stock > 0
     }
-
-    const updatedProduct = await Product.findOneAndUpdate(
-        {_id:id,userId:userLogged.id}, 
+    
+    
+    if (userId !== foundProduct.userId.toString()  && role!=="admin" ){
+        return res.status(404).json({
+            success:false,
+            message:"You are not authorized to update it"
+        })}
+    
+        const updatedProduct = await Product.findByIdAndUpdate(
+        {_id:id}, 
         {...updateData},
         {returnDocument:"after", projection:{userId:0},runValidators:true})
 
-    if(!updatedProduct){
-        return res.status(404).json({
-            success:false,
-            message:"Product not found or you are not authorized to update it"
-        })
-    }
-
-    return res.status(200).json({
+        return res.status(200).json({
         success: true,
         data: updatedProduct,
         message: "Product updated successfully"
@@ -123,18 +139,25 @@ const deleteProduct = async (req,res) => {
     
     try{
     const id = req.params.id
-    const userLogged = req.userLogged
+    const {id:userId,role} = req.userLogged
+    const foundProduct = await Product.findById(id)
 
-    const deleteProduct = await Product.findOneAndDelete({_id:id,userId:userLogged.id})
-    
-    if(!deleteProduct){
+    if(!foundProduct){
          return res.status(404).json({
                 success: false,
-                message: "Product not found or you are not authorized to delete it"
+                message: "Product not found"
             })
     }
 
-    const publicData = deleteProduct.toObject()
+    if(userId !== foundProduct.userId.toString() && role !== "admin" ){
+          return res.status(404).json({
+                success: false,
+                message: "You are not authorized to delete it"
+            })
+    }
+
+    const deletedProduct= await Product.findByIdAndDelete(id)
+    const publicData = deletedProduct.toObject()
     delete publicData.userId
     
     return res.status(200).json({

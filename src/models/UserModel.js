@@ -3,11 +3,20 @@ import {model,Schema} from "mongoose"
 // schema para usuarios
 const userSchema = new Schema({
     userName: { type: String, required: true },
-    email: { type: String, required: true, unique: true,  
-      // REGEX: Valida la estructura clásica de email obligando a terminar en .com
-    match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$/, 'Por favor, ingresa un correo electrónico válido que termine en .com']
-  },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true,
+        trim: true,
+        lowercase: true
+    },
+    // Agregar rol para tener usuario Admin
+    role: { 
+    type: String, 
+    enum: ['user', 'admin'], 
+    default: 'user' // Por defecto todos son usuarios normales
+  }
 }, {
   versionKey: false,
   timestamps: true

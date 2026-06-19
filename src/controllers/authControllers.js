@@ -14,23 +14,20 @@ const createUser = async (req,res) =>{
       return res.status(409).json({ success: false, error: "Conflict, user already exists" })
     }
     
-    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-]).{8,}$/
-    if (!regex.test(password)) {
-      return res.status(400).json({ success: false, error: "Invalid password. It must contain at least 8 characters, one uppercase letter, one number, and one special character." })
-    }
-    
     const hashPassword = await bcrypt.hash(password,10)
 
     
     const newUser = new User({
         userName,
         email,
-        password:hashPassword
+        password:hashPassword,
+        role:"user"
     })
 
     await newUser.save()
+
       // generar token
-      const payload = { id: newUser._id, email: newUser.email, userName: newUser.userName }
+      const payload = { id: newUser._id, email: newUser.email, userName: newUser.userName,role:newUser.role }
       const secretKey = process.env.JWT_SECRET
       const token = jwt.sign(payload, secretKey, { expiresIn: "1h" })
     
@@ -59,12 +56,12 @@ const createUser = async (req,res) =>{
  const login = async (req,res) =>{
    try{ 
     const {email,password} = req.body
-    if(!email || !password){
-     return res.status(400).json({
-        success:false,
-        message: "The required email or password was not submitted.",
-     }) 
-    }
+    // if(!email || !password){
+    //  return res.status(400).json({
+    //     success:false,
+    //     message: "The required email or password was not submitted.",
+    //  }) 
+    // }   ZOD!!!!
 
     const foundUser =await User.findOne({email})
 
@@ -72,7 +69,7 @@ const createUser = async (req,res) =>{
             const validPassword = await bcrypt.compare(password,foundUser.password)  
             if (validPassword){
                 // Generar Token
-                const payload = {id:foundUser._id,email:foundUser.email,userName:foundUser.userName}
+                const payload = {id:foundUser._id,email:foundUser.email,userName:foundUser.userName,role:foundUser.role}
                 const secretKey = process.env.JWT_SECRET
                 const token = jwt.sign(payload,secretKey,{expiresIn:"1h"})
 
@@ -112,7 +109,7 @@ const updateProfile = async (req, res) => {
     )
 
     // Generamos un nuevo token con el userName actualizado para que el front lo actualice
-    const payload = { id: updatedUser._id, email: updatedUser.email, userName: updatedUser.userName }
+    const payload = { id: updatedUser._id, email: updatedUser.email, userName: updatedUser.userName,role:updatedUser.role }
     const secretKey = process.env.JWT_SECRET
     const token = jwt.sign(payload, secretKey, { expiresIn: "1h" })
 
@@ -130,7 +127,7 @@ const updateProfile = async (req, res) => {
 const updatePassword = async (req, res) => {
   try {
     const userLogged = req.userLogged
-    const userId = userLogged?.id
+    const {id:userId} = userLogged
 
     if (!userId) {
       return res.status(401).json({ success: false, message: "No autorizado." })
@@ -154,15 +151,6 @@ const updatePassword = async (req, res) => {
       return res.status(400).json({ success: false, message: "La contraseña actual es incorrecta." })
     }
 
-    // 3. Validamos que la nueva contraseña cumpla con tu expresión regular estricta
-    const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-]).{8,}$/
-    if (!regex.test(newPassword)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Nueva contraseña inválida. Debe contener al menos 8 caracteres, una mayúscula, un número y un carácter especial." 
-      })
-    }
-
     // 4. Hasheamos la nueva contraseña y la guardamos
     const hashPassword = await bcrypt.hash(newPassword, 10)
     foundUser.password = hashPassword
@@ -182,14 +170,14 @@ const updatePassword = async (req, res) => {
 const deleteAccount = async (req, res) => {
   try {
     const userLogged = req.userLogged
-    const userId = userLogged?.id || userLogged?._id
+    const {id:userId} = userLogged
 
     // 1. Eliminamos primero todos los productos que le pertenecen a este usuario
     // (Asumiendo que importas el modelo Product en este archivo)
     await Product.deleteMany({ userId: userId })
 
     // 2. Eliminamos al usuario de la base de datos
-    await User.findByIdAndDelete(userLogged.id)
+    await User.findByIdAndDelete(userId)
 
     return res.status(200).json({
       success: true,
