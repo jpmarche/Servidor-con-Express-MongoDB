@@ -32,20 +32,20 @@ server.use("/auth", AuthRouter)
 // FUNCIÓN PARA CREAR AL ADMINISTRADOR ÚNICO SI NO EXISTE
 const seedAdmin = async () => {
     try {
-        // Buscamos si ya existe algún usuario con el rol de admin
+        // Busca si ya existe algún usuario con el rol de admin
         const adminExists = await User.findOne({ role: "admin" })
         
         if (!adminExists) {
             console.log("⏳ No se encontró un administrador. Creando uno nuevo...")
             
-            // Hasheamos la contraseña que vendrá desde el .env
+            // Hashea la contraseña que vendrá desde el .env
             const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD || "Admin123!", 10)
             
             await User.create({
                 userName: process.env.ADMIN_NAME || "Super Admin",
                 email: process.env.ADMIN_EMAIL || "admin@correo.com",
                 password: hashedPassword,
-                role: "admin" // Forzamos el rol de administrador en la base de datos
+                role: "admin" // Fuerza el rol de administrador en la base de datos
             })
             
             console.log("🚀 Administrador único inicializado con éxito.")
@@ -61,9 +61,9 @@ const seedAdmin = async () => {
 server.listen(PORT, async () => {
     console.log(`Servidor en escucha en http://localhost:${PORT}`)
     
-    // Conectamos de forma asíncrona a MongoDB
+    // Conecta de forma asíncrona a MongoDB
     await connectDb()
     
-    // Ejecutamos la validación/creación del administrador único
+    // Ejecuta la validación/creación del administrador único
     await seedAdmin()
 })

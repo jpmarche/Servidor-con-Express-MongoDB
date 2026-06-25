@@ -2,26 +2,69 @@ import { Product } from "../models/ProductModel.js"
 
 
 // Funcion para ver todos los productos registrados por el usuario logueado
-const getProducts = async (req,res)=>{
+const getProducts = async (req, res) => {
     try {
-        const userLogged = req.userLogged
-        const {role,id} = userLogged
-        let foundProducts
-        if(role==="admin"){
-            foundProducts = await Product.find()
-        }else{
-            foundProducts = await Product.find({userId: id})
+        const { role, id } = req.userLogged;
+
+        // Ver lo que pide el usuario (?page, ?limit, ?sort, ?filter)
+        const { page = 1, limit = 10, sort, filter } = req.query;
+
+        // Comprobar Role
+        let queryFilters = {};
+        if (role !== "admin") {
+            queryFilters.userId = id;
         }
+
+        // FILTER--- ?filter=category:Electrónica
+        if (filter) {
+            // Separa el texto 'category:food' en campo -> 'category' y valor -> 'food'
+            const [campo, valor] = filter.split(':');
+            
+            // Añade dinámicamente el filtro (ej: queryFilters.category = "Electrónica")
+            queryFilters[campo] = valor; 
+        }
+
+        // SORT--- ?sort=asc o ?sort=desc (Ordenamiento)
+        let sortOptions = {};
+        if (sort) {
+            //  'asc' (1) o 'desc' (-1)
+            sortOptions.name = sort === 'asc' ? 1 : -1;
+        } else {
+            sortOptions.createdAt = -1; // Orden por defecto si no envían nada
+        }
+
+        // PAGE (?page=1&limit=10)
+        const pageNumber = Math.max(1, parseInt(page));
+        const limitNumber = Math.max(1, parseInt(limit));
+        const skip = (pageNumber - 1) * limitNumber; // Cuántos productos saltarse
+
+        // Buscar el producto en la base de datos
+        const [foundProducts, totalProducts] = await Promise.all([
+            Product.find(queryFilters)
+                .sort(sortOptions)
+                .skip(skip)
+                .limit(limitNumber),
+            Product.countDocuments(queryFilters)
+        ]);
+
+        // Respuesta al usuario
         res.status(200).json({
             success: true,
+            pagination: {
+                totalItems: totalProducts,
+                currentPage: pageNumber,
+                totalPages: Math.ceil(totalProducts / limitNumber),
+                itemsPerPage: limitNumber
+            },
             data: foundProducts,
             message: "Products fetched successfully"
-       })
-} 
+        });
+    } 
     catch (error) {
-    res.status(500).json({ success: false, error: "Error fetching products" })
+        res.status(500).json({ success: false, error: "Error fetching products" });
     }
-}
+};
+
 
 // Funcion para ver un producto registrado por el usuario logueado
 const getProduct = async(req,res)=>{

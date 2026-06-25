@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Definimos el esquema del producto
+// Define el esquema del producto
 const productSchema = z.object({
   name: z.string({ required_error: "El nombre es obligatorio" })
     .min(2, "El nombre del producto debe tener al menos 2 caracteres")
@@ -19,7 +19,7 @@ const productSchema = z.object({
     "Sin categoria"
   ], {
       errorMap: () => ({ message: "Categoría inválida. Debe elegir una de las opciones permitidas." })
-  }).default("Sin categoria"), // Si el cliente no manda este campo, Zod le pone "Sin categoria" solo
+  }).default("Sin categoria"), // Si el cliente no manda este campo, Zod le pone "Sin categoria" 
 
   stock: z.number({ required_error: "El stock es obligatorio" })
     .int("El stock debe ser un número entero")

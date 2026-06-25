@@ -95,7 +95,7 @@ const createUser = async (req,res) =>{
     // Funcion para actualizar el perfil (Solo permite cambiar el userName)
 const updateProfile = async (req, res) => {
   try {
-    const userLogged = req.userLogged // Tu authMiddleware ya inyecta esto
+    const userLogged = req.userLogged 
     const { userName } = req.body
 
     if (!userName) {
@@ -105,7 +105,7 @@ const updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userLogged.id,
       { userName },
-      { new: true, projection: { password: 0 } } // Devolvemos el usuario sin la contraseña
+      { new: true, projection: { password: 0 } } // Devuelve el usuario sin la contraseña
     )
 
     // Generamos un nuevo token con el userName actualizado para que el front lo actualice
@@ -139,19 +139,19 @@ const updatePassword = async (req, res) => {
       return res.status(400).json({ success: false, message: "La contraseña actual y la nueva son requeridas." })
     }
 
-    // 1. Buscamos al usuario en la base de datos para obtener su password hasheado
+    // Busca al usuario en la base de datos para obtener su password hasheado
     const foundUser = await User.findById(userId)
     if (!foundUser) {
       return res.status(404).json({ success: false, message: "Usuario no encontrado." })
     }
 
-    // 2. Verificamos si la contraseña actual que ingresó es correcta
+    // Verifica si la contraseña actual que ingresó es correcta
     const isValidPassword = await bcrypt.compare(currentPassword, foundUser.password)
     if (!isValidPassword) {
       return res.status(400).json({ success: false, message: "La contraseña actual es incorrecta." })
     }
 
-    // 4. Hasheamos la nueva contraseña y la guardamos
+    // Hashea la nueva contraseña y la guarda
     const hashPassword = await bcrypt.hash(newPassword, 10)
     foundUser.password = hashPassword
     await foundUser.save()
@@ -172,11 +172,10 @@ const deleteAccount = async (req, res) => {
     const userLogged = req.userLogged
     const {id:userId} = userLogged
 
-    // 1. Eliminamos primero todos los productos que le pertenecen a este usuario
-    // (Asumiendo que importas el modelo Product en este archivo)
+    // Elimina primero todos los productos que le pertenecen a este usuario
     await Product.deleteMany({ userId: userId })
 
-    // 2. Eliminamos al usuario de la base de datos
+    // Elimina al usuario de la base de datos
     await User.findByIdAndDelete(userId)
 
     return res.status(200).json({

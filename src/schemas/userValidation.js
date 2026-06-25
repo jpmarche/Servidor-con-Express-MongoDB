@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-// Tu expresión regular estricta para contraseñas seguras
+// Regex para contraseñas seguras
 const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.#_-]).{8,}$/;
 
-// 1. Esquema para Registro de Usuario (POST /auth/register)
+// Esquema para Registro de Usuario (POST /auth/register)
 const registerSchema = z.object({
   userName: z.string({ required_error: "El nombre de usuario es obligatorio" })
     .min(3, "El nombre de usuario debe tener al menos 3 caracteres")
@@ -17,7 +17,7 @@ const registerSchema = z.object({
     .regex(passwordRegex, "La contraseña debe contener al menos 8 caracteres, una mayúscula, un número y un carácter especial")
 });
 
-// 2. Esquema para Inicio de Sesión (POST /auth/login)
+// Esquema para Inicio de Sesión (POST /auth/login)
 const loginSchema = z.object({
   email: z.string({ required_error: "El correo electrónico es obligatorio" })
     .email("El formato de correo electrónico no es válido"),
@@ -26,14 +26,14 @@ const loginSchema = z.object({
     .min(1, "La contraseña no puede estar vacía")
 });
 
-// 3. Esquema para Actualizar el Perfil (Solo userName)
+// Esquema para Actualizar el Perfil (Solo userName)
 const updateProfileSchema = z.object({
   userName: z.string({ required_error: "El nombre de usuario es obligatorio" })
     .min(3, "El nombre de usuario debe tener al menos 3 caracteres")
     .max(20, "El nombre de usuario no puede superar los 30 caracteres")
 });
 
-// 4. Esquema para Actualizar la Contraseña
+// Esquema para Actualizar la Contraseña
 const updatePasswordSchema = z.object({
   currentPassword: z.string({ required_error: "La contraseña actual es obligatoria" })
     .min(1, "La contraseña actual no puede estar vacía"),
