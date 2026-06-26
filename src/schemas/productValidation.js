@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-// Define el esquema del producto
+// Esquema para crear productos
 const productSchema = z.object({
   name: z.string({ required_error: "El nombre es obligatorio" })
     .min(2, "El nombre del producto debe tener al menos 2 caracteres")
@@ -9,7 +9,7 @@ const productSchema = z.object({
   price: z.number({ required_error: "El precio es obligatorio" })
     .positive("El precio debe ser un número mayor a 0"),
 
-    category: z.enum([
+  category: z.enum([
     "Electrónica",
     "Almacenamiento",
     "Computación",
@@ -19,15 +19,15 @@ const productSchema = z.object({
     "Sin categoria"
   ], {
       errorMap: () => ({ message: "Categoría inválida. Debe elegir una de las opciones permitidas." })
-  }).default("Sin categoria"), // Si el cliente no manda este campo, Zod le pone "Sin categoria" 
+  }).default("Sin categoria"), 
 
   stock: z.number({ required_error: "El stock es obligatorio" })
     .int("El stock debe ser un número entero")
     .nonnegative("El stock no puede ser un número negativo")
 });
 
-// 2. Esquema para actualizar productos
-export const updateProductSchema = createProductSchema.partial().extend({
+// Esquema para actualizar productos
+const updateProductSchema = productSchema.partial().extend({
   category: z.enum([
     "Electrónica",
     "Almacenamiento",
@@ -36,7 +36,7 @@ export const updateProductSchema = createProductSchema.partial().extend({
     "Accesorios de Red",
     "Componentes de Hardware",
     "Sin categoria"
-  ]).optional() // Se vuelve opcional y no sobreescribe con "Sin categoria" si no lo mandas
+  ]).optional() 
 });
 
-export {productSchema,updateProductSchema}
+export { productSchema, updateProductSchema };
