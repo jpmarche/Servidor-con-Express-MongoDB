@@ -26,4 +26,17 @@ const productSchema = z.object({
     .nonnegative("El stock no puede ser un número negativo")
 });
 
-export {productSchema}
+// 2. Esquema para actualizar productos
+export const updateProductSchema = createProductSchema.partial().extend({
+  category: z.enum([
+    "Electrónica",
+    "Almacenamiento",
+    "Computación",
+    "Periféricos",
+    "Accesorios de Red",
+    "Componentes de Hardware",
+    "Sin categoria"
+  ]).optional() // Se vuelve opcional y no sobreescribe con "Sin categoria" si no lo mandas
+});
+
+export {productSchema,updateProductSchema}
