@@ -149,7 +149,6 @@ const updateProduct = async (req,res) => {
         })
     }
       
-    const updateData = {...body}
         const updateData = {
                name: body.name || foundProduct.name,
                price: body.price !== undefined ? body.price : foundProduct.price,
