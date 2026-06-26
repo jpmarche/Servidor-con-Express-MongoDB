@@ -149,13 +149,12 @@ const updateProduct = async (req,res) => {
         })
     }
       
-    const updateData = {
-            name: body.name || foundProduct.name,
-            description: body.description || foundProduct.description,
-            price: body.price !== undefined ? body.price : foundProduct.price,
-            stock: body.stock !== undefined ? body.stock : foundProduct.stock,
-            image: body.image || foundProduct.image,
-            category: body.category || foundProduct.category
+    const updateData = {...body}
+        const updateData = {
+               name: body.name || foundProduct.name,
+               price: body.price !== undefined ? body.price : foundProduct.price,
+               category: body.category || foundProduct.category,
+               stock: body.stock !== undefined ? body.stock : foundProduct.stock,
         };
     if(body.stock !== undefined){
         updateData.available = body.stock > 0
