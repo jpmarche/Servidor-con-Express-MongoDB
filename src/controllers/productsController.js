@@ -149,14 +149,21 @@ const updateProduct = async (req,res) => {
         })
     }
       
-    const updateData = {...body}
+    const updateData = {
+            name: body.name || foundProduct.name,
+            description: body.description || foundProduct.description,
+            price: body.price !== undefined ? body.price : foundProduct.price,
+            stock: body.stock !== undefined ? body.stock : foundProduct.stock,
+            image: body.image || foundProduct.image,
+            category: body.category || foundProduct.category
+        };
     if(body.stock !== undefined){
         updateData.available = body.stock > 0
     }
     
     
     if (userId !== foundProduct.userId.toString()  && role!=="admin" ){
-        return res.status(404).json({
+        return res.status(401).json({
             success:false,
             message:"You are not authorized to update it"
         })}

@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "ec8d0d7a-0e81-4900-9923-03213d23c612",
+    "_postman_id": "d80b0539-5d03-4462-a9f4-9a1624ef8d86",
     "name": "Proyecto-backend-utn-MVC",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55697097"
@@ -72,7 +72,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"email\": \"juan@example.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+          "raw": "{\r\n  \"email\": \"juan@gmail.com\",\r\n  \"password\": \"Bostero14.\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -243,6 +243,121 @@
           ],
           "path": [
             "products"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Actualizar nombre de usuario",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"userName\":\"Licha\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/update-profile",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "update-profile"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Actualizar contraseña",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "PUT",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"currentPassword\":\"Gustavo123.\",\r\n  \"newPassword\":\"Gusti123.\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/auth/update-password",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "update-password"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Eliminar usuario",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{jwt_token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/auth/delete-account",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "auth",
+            "delete-account"
           ]
         }
       },
