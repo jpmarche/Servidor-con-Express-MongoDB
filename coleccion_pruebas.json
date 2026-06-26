@@ -1,6 +1,6 @@
 {
   "info": {
-    "_postman_id": "d80b0539-5d03-4462-a9f4-9a1624ef8d86",
+    "_postman_id": "bc2852ed-8326-47c6-a3eb-bfd61185e4ee",
     "name": "Proyecto-backend-utn-MVC",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "55697097"
@@ -29,7 +29,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"userName\": \"Juan Perez\",\r\n  \"email\": \"juan@example.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+          "raw": "{\r\n  \"userName\": \"Pepe\",\r\n  \"email\": \"pepe@gmail.com\",\r\n  \"password\": \"Pepito123.\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -72,7 +72,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"email\": \"juan@gmail.com\",\r\n  \"password\": \"Bostero14.\"\r\n}",
+          "raw": "{\r\n  \"email\": \"pepe@gmail.com\",\r\n  \"password\": \"Pepe123.\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -164,7 +164,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n      \"price\": 50000,\r\n      \"category\": \"Electronic\",\r\n    \"stock\" : 20\r\n}",
+          "raw": "{\r\n      \"price\": 50000,\r\n      \"category\": \"Periféricos\",\r\n    \"stock\" : 20\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -172,13 +172,13 @@
           }
         },
         "url": {
-          "raw": "{{base_url}}/products/{{product_id}}",
+          "raw": "{{base_url}}/products/6a3e759dc6ad155fde96bbd2",
           "host": [
             "{{base_url}}"
           ],
           "path": [
             "products",
-            "{{product_id}}"
+            "6a3e759dc6ad155fde96bbd2"
           ]
         }
       },
@@ -229,7 +229,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n     \"name\": \"Notebook\",\r\n      \"price\": 3000,\r\n      \"category\": \"Electronic\",\r\n    \"stock\" : 200\r\n}",
+          "raw": "{\r\n     \"name\": \"Notebook\",\r\n      \"price\": 3000,\r\n      \"category\": \"Electrónica\",\r\n    \"stock\" : 200\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -278,7 +278,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"userName\":\"Licha\"\r\n}",
+          "raw": "{\r\n  \"userName\":\"Pepito\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -315,7 +315,7 @@
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\r\n  \"currentPassword\":\"Gustavo123.\",\r\n  \"newPassword\":\"Gusti123.\"\r\n}",
+          "raw": "{\r\n  \"currentPassword\":\"Pepito123.\",\r\n  \"newPassword\":\"Pepe123.\"\r\n}",
           "options": {
             "raw": {
               "language": "json"
